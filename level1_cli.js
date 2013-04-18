@@ -1,3 +1,5 @@
+'use strict';
+
 var level1   = require('./index'), // or 'level1'
     readline = require('readline');
 

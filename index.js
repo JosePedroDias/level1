@@ -1,3 +1,5 @@
+'use strict';
+
 var levelup = require('levelup'),
     uuid    = require('node-uuid');
 
@@ -28,7 +30,12 @@ var level1 = function(dbPath) {
 
   // these will get exported
 
-  var put = function(val, key) {
+  var put = function(val, key, cb) {
+    if (arguments.length === 2 && typeof key === 'function') {
+      cb = key;
+      key = undefined;
+    }
+
     if (key === undefined) {
       key = uuid.v1();
     }
@@ -43,8 +50,15 @@ var level1 = function(dbPath) {
       val = JSON.stringify(val);
     }
 
+    if (!cb) {
+      cb = function(err) {
+        if (err) { console.log('ERR:' + err.message); }
+      };
+    }
+
     db.put(key, val, function(err) {
-      if (err) { console.log('ERR:' + err.message); }
+      if (err) { return cb(err); }
+      cb(null, key);
     });
 
     return key;
