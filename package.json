@@ -1,0 +1,37 @@
+{
+  "name": "level1",
+  "version": "0.1.0",
+  "author": {
+    "name": "José Pedro Dias",
+    "email": "jose.pedro.dias@gmail.com"
+  },
+  "keywords": [
+    "database",
+    "leveldb"
+  ],
+  "description": "level1 is a JavaScript API over leveldb",
+  "homepage": "https://github.com/JosePedroDias/level1",
+  "lib": ".",
+  "main": "./index.js",
+  "dependencies": {
+    "levelup": "*",
+    "node-uuid": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/JosePedroDias/level1.git"
+  },
+  "contributors": [
+    {
+      "name": "José Pedro Dias",
+      "email": "jose.pedro.dias@gmail.com"
+    }
+  ],
+  "license": "MIT",
+  "engine": {
+    "node": ">=0.8"
+  },
+  "readmeFilename": "README.md",
+  "_id": "level1@0.1.0",
+  "_from": "level1@"
+}
