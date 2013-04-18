@@ -18,12 +18,20 @@ db.clear(cb); // clears db
 
 db.list(cb); // returns array of {key:k, value:v}
 
+// you must pass a filter function which receives the arguments: value and key (which you can ignore)
+db.search(function(v) { typeof v === 'object' && 'name' in v && v.name[0].toLowerCase() === 'a' })
+// this example returns values which are objects, have attribute 'name' and whose first character is an a.
+
 db.keys(cb); // returns array of keys
 
 db.values(cb); // returns array of values
 
 ```
 
+
+level1 can be given primitives to store (numbers, strings)
+
+On objects, it adds/updates the attributes _createdAt and _modifiedAt, which are timestamps.
 
 
 Check level1_cli.js for a comprehensive example of the API

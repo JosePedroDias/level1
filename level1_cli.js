@@ -80,7 +80,7 @@ rl.on('line', function(cmd) {
         }
 
         try {
-          fn = new Function('k', 'v', fnBody);
+          fn = new Function('v', 'k', fnBody);
         } catch (err) {
           return console.log('ERR:' + err);
         }
@@ -136,7 +136,7 @@ rl.on('line', function(cmd) {
         '* get <key>\n',
         '* del <key>\n',
         '* list\n',
-        '* search <function body, receiving arguments k, v and returning boolean>\n',
+        '* search <function body, receiving arguments v, k and returning boolean>\n',
         '* clear\n',
         '* keys\n',
         '* values\n\n'

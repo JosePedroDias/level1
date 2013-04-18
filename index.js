@@ -105,7 +105,7 @@ var level1 = function(dbPath) {
     var rs = db.createReadStream();
     rs.on('data', function(kv) {
       var v = parseIfPossible(kv.value);
-      var result = filterFn(kv.key, v);
+      var result = filterFn(v, kv.key);
       if (result) {
         res.push({key:kv.key, value:v});
       }
