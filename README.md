@@ -4,9 +4,9 @@
 
 ## Summary
 
-It offers an **abstraction over the leveldb key value store** ([core](//JosePedroDias/level1/blob/master/level1_core.md)),
-a **command line interface** ([cli](//JosePedroDias/level1/blob/master/level1_cli.md)) and
-an **http interface** ([http](//JosePedroDias/level1/blob/master/level1_http.md)).
+It offers an **abstraction over the leveldb key value store** ([core](https://github.com/JosePedroDias/level1/blob/master/level1_core.md)),
+a **command line interface** ([cli](https://github.com/JosePedroDias/level1/blob/master/level1_cli.md)) and
+an **http interface** ([http](https://github.com/JosePedroDias/level1/blob/master/level1_http.md)).
 
 
 
