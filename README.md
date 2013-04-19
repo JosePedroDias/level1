@@ -1,6 +1,8 @@
 # level 1 - A simple leveldb wrapper for nodejs
 
 
+## example...
+
 ```javascript
 var level1 = require('./level1');
 
@@ -35,3 +37,15 @@ On objects, it adds/updates the attributes _createdAt and _modifiedAt, which are
 
 
 Check level1_cli.js for a comprehensive example of the API
+
+
+
+## ideas that I may pursuit
+
+* add modify method (or extend search) to allow changing/deleting a subset of the items
+
+* expose the on events
+
+* expose the on events on http via socket.io
+
+* support for binary files upload and download

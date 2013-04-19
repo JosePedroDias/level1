@@ -26,6 +26,26 @@
 
 
 
+    var t = function(e, o, keyToSetIfString) {
+        console.log('e:', typeof e, e, ' | o:', typeof o, o);
+        if (!e) {
+            if (typeof o !== 'object') {
+                var O = {ok:'ok'};
+                if (keyToSetIfString) {
+                    O[keyToSetIfString] = o;
+                }
+                return O;
+            }
+            return o;
+        }
+        if (typeof e !== 'object') {
+            return {error:e.message || e};
+        }
+        return {error:e.message || e};
+    };
+
+
+
     var level1_http = function(cfg) {
 
         if (!cfg) { cfg = {}; }
@@ -39,7 +59,7 @@
 
         var app = express();
 
-        //app.use( express.bodyParser() );
+        app.use( express.bodyParser() );
 
 
 
@@ -56,7 +76,7 @@
 
         // OPTIONS
 
-        app.options('*', function(req, res/*, next*/) {
+        app.options('*', function(req, res) {
             res.send('');
         });
 
@@ -70,7 +90,7 @@
             if (CFG.verbose) { console.log('.get(' + key + ')'); }
             
             db.get(key, function(err, value) {
-                res.send(value); // TODO
+                res.send( t(err, value) );
             });
         });
 
@@ -78,27 +98,29 @@
             if (CFG.verbose) { console.log('.list()'); }
             
             db.list(function(err, arrOfKV) {
-                res.send(arrOfKV); // TODO
+                res.send( t(err, arrOfKV) );
             });
         });
 
         app.post('/search', function(req, res) {
-            if (CFG.verbose) { console.log('.search()'); } 
             
-            var fn, fnBody = 'return true;'; // TODO fnBody
+            var fn, fnBody;
+            fnBody = req.body.filter || req.query.filter;
+
+            if (CFG.verbose) { console.log('.search(' + fnBody + ')'); } 
 
             if (fnBody.indexOf('return') === -1) {
-              fnBody = 'return ' + fnBody;
+                fnBody = 'return ' + fnBody;
             }
 
             try {
-              fn = new Function('v', 'k', fnBody);
+                fn = new Function('v', 'k', fnBody);
             } catch (err) {
-              return console.log({error: err});
+                return res.send({error: err});
             }
 
             db.search(fn, function(err, arrOfKV) {
-                res.send(arrOfKV); // TODO
+                res.send( t(err, arrOfKV) );
             });
         });
 
@@ -106,7 +128,7 @@
             if (CFG.verbose) { console.log('.keys()'); }
             
             db.keys(function(err, keys) {
-                res.send(keys); // TODO
+                res.send( t(err, keys) );
             });
         });
 
@@ -114,45 +136,42 @@
             if (CFG.verbose) { console.log('.values()'); }
             
             db.values(function(err, values) {
-                res.send(values); // TODO
+                res.send( t(err, values) );
             });
         });
 
 
 
         // SETS
-        // put clear del
-        // 
+
         app.get('/del/:key', function(req, res) {
             var key = req.params.key;
 
             if (CFG.verbose) { console.log('.del(' + key + ')'); }
             
-            db.del(key, function(err, value) {
-                res.send(value); // TODO
+            db.del(key, function(err) {
+                res.send( t(err, {ok:'ok'}) );
             });
         });
         
         app.post('/put/:key', function(req, res) {
             var key = req.params.key;
+            var val = parseIfPossible( req.body.item || req.query.item );
 
-            console.log(typeof val);
-            var val = parseIfPossible( req.body );
-
-            if (CFG.verbose) { console.log('.put(' + val + ', ' + key + ')'); }
+            if (CFG.verbose) { console.log('.put(' + JSON.stringify(val) + ', ' + key + ')'); }
             
             db.put(val, key, function(err, value) {
-                res.send(value); // TODO
+                res.send( t(err, value, 'key') );
             });
         });
 
         app.post('/put', function(req, res) {
-            var val = parseIfPossible( req.body );
+            var val = parseIfPossible( req.body.item || req.query.item );
 
-            if (CFG.verbose) { console.log('.put(' + val + ')'); }
+            if (CFG.verbose) { console.log('.put(' + JSON.stringify(val) + ')'); }
             
-            db.put(val, function(err, key) {
-                res.send(key); // TODO
+            db.put( val, function(err, key) {
+                res.send( t(err, key, 'key') );
             });
         });
 
@@ -160,7 +179,7 @@
             if (CFG.verbose) { console.log('.clear()'); }
             
             db.clear(function(err, value) {
-                res.send(value); // TODO
+                res.send( t(err, value) );
             });
         });
 
