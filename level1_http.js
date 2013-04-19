@@ -5,7 +5,7 @@
 
     
     var express = require('express');
-    var level1 = require('./index');
+    var level1_core = require('./level1_core');
 
 
     
@@ -55,7 +55,7 @@
         //if ('accessControlFn' in cfg) { CFG.accessControlFn = cfg.accessControlFn; }
         if ('verbose'         in cfg) { CFG.verbose         = cfg.verbose; }
 
-        var db = level1(cfg.dbPath);
+        var db = level1_core({dbPath:cfg.dbPath});
 
         var app = express();
 
