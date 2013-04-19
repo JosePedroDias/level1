@@ -27,7 +27,6 @@
 
 
     var t = function(e, o, keyToSetIfString) {
-        console.log('e:', typeof e, e, ' | o:', typeof o, o);
         if (!e) {
             if (typeof o !== 'object') {
                 var O = {ok:'ok'};
@@ -107,11 +106,11 @@
             var fn, fnBody;
             fnBody = req.body.filter || req.query.filter;
 
-            if (CFG.verbose) { console.log('.search(' + fnBody + ')'); } 
-
             if (fnBody.indexOf('return') === -1) {
                 fnBody = 'return ' + fnBody;
             }
+
+            if (CFG.verbose) { console.log('.search(' + fnBody + ')'); } 
 
             try {
                 fn = new Function('v', 'k', fnBody);
