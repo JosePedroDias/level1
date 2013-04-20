@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+    <head>
+        <title></title>
+
+        <meta charset="utf-8">
+
+        <script type="text/javascript" src="level1_http_client.js"></script>
+    </head>
+
+    <body>
+        <script type="text/javascript">
+            var l = level1.open('http://127.0.0.1:3000');
+
+            var cb = function(err, res) {
+                if (err) {
+                    return console.error(err);
+                }
+                console.log(JSON.stringify(res, null, '\t'));
+            }
+
+
+
+            // run script...
+            var ops = [
+                "l.clear()",
+                "l.put(\"{name:'Anna', age:32}\", 'x', cb)",
+                "l.put(\"{name:'Adam', age:20}\", 'y', cb)",
+                "l.put(\"{name:'Johnny', age:1}\", cb)",
+                "l.get('x', cb)",
+                "l.list(cb)",
+                "l.del('y', cb)",
+                "l.keys(cb)",
+                "l.values(cb)",
+                "l.search(\"v.age > 2\", cb)" // TODO NOT WORKING?!
+            ];
+
+            var timer = setInterval(
+                function() {
+                    var op = ops.shift();
+                    if (!op) {
+                        return clearInterval(timer);
+                    }
+                    console.log('');
+                    console.warn(op);
+                    eval(op);
+                },
+                2000
+            );
+        </script>
+    </body>
+</html>
