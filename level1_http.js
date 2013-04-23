@@ -1,14 +1,14 @@
 (function() {
-    
+
     'use strict';
 
 
-    
+
     var express = require('express');
     var level1_core = require('./level1_core');
 
 
-    
+
     var CFG = {
         port:            3000,
         dbPath:          './mydb',
@@ -54,7 +54,7 @@
         //if ('accessControlFn' in cfg) { CFG.accessControlFn = cfg.accessControlFn; }
         if ('verbose'         in cfg) { CFG.verbose         = cfg.verbose; }
 
-        var db = level1_core({dbPath:cfg.dbPath});
+        var db = cfg.db || level1_core({dbPath:cfg.dbPath});
 
         var app = express();
 
@@ -63,7 +63,7 @@
 
 
         // CORS
-        
+
         app.all('*', function(req, res, next) {
             res.header('Access-Control-Allow-Origin', '*');
             res.header('Access-Control-Allow-Headers', 'Content-Type');
@@ -82,12 +82,12 @@
 
 
         // GETS
-        
+
         app.get('/get/:key', function(req, res) {
             var key = req.params.key;
 
             if (CFG.verbose) { console.log('.get(' + key + ')'); }
-            
+
             db.get(key, function(err, value) {
                 res.send( t(err, value) );
             });
@@ -95,14 +95,13 @@
 
         app.get('/list', function(req, res) {
             if (CFG.verbose) { console.log('.list()'); }
-            
+
             db.list(function(err, arrOfKV) {
                 res.send( t(err, arrOfKV) );
             });
         });
 
-        app.post('/search', function(req, res) {
-            
+        var searchHdlr = function(req, res) {
             var fn, fnBody;
             fnBody = req.body.filter || req.query.filter;
 
@@ -110,7 +109,7 @@
                 fnBody = 'return ' + fnBody;
             }
 
-            if (CFG.verbose) { console.log('.search(' + fnBody + ')'); } 
+            if (CFG.verbose) { console.log('.search(' + fnBody + ')'); }
 
             try {
                 fn = new Function('v', 'k', fnBody);
@@ -121,11 +120,13 @@
             db.search(fn, function(err, arrOfKV) {
                 res.send( t(err, arrOfKV) );
             });
-        });
+        };
+        app.get('/search', searchHdlr);
+        app.post('/search', searchHdlr);
 
         app.get('/keys', function(req, res) {
             if (CFG.verbose) { console.log('.keys()'); }
-            
+
             db.keys(function(err, keys) {
                 res.send( t(err, keys) );
             });
@@ -133,7 +134,7 @@
 
         app.get('/values', function(req, res) {
             if (CFG.verbose) { console.log('.values()'); }
-            
+
             db.values(function(err, values) {
                 res.send( t(err, values) );
             });
@@ -147,36 +148,40 @@
             var key = req.params.key;
 
             if (CFG.verbose) { console.log('.del(' + key + ')'); }
-            
+
             db.del(key, function(err) {
                 res.send( t(err, {ok:'ok'}) );
             });
         });
-        
-        app.post('/put/:key', function(req, res) {
+
+        var putKeyHdlr = function(req, res) {
             var key = req.params.key;
             var val = parseIfPossible( req.body.item || req.query.item );
 
             if (CFG.verbose) { console.log('.put(' + JSON.stringify(val) + ', ' + key + ')'); }
-            
+
             db.put(val, key, function(err, value) {
                 res.send( t(err, value, 'key') );
             });
-        });
+        };
+        app.get('/put/:key', putKeyHdlr);
+        app.post('/put/:key', putKeyHdlr);
 
-        app.post('/put', function(req, res) {
+        var putHdlr = function(req, res) {
             var val = parseIfPossible( req.body.item || req.query.item );
 
             if (CFG.verbose) { console.log('.put(' + JSON.stringify(val) + ')'); }
-            
+
             db.put( val, function(err, key) {
                 res.send( t(err, key, 'key') );
             });
-        });
+        };
+        app.get('/put', putHdlr);
+        app.post('/put', putHdlr);
 
         app.get('/clear', function(req, res) {
             if (CFG.verbose) { console.log('.clear()'); }
-            
+
             db.clear(function(err, value) {
                 res.send( t(err, value) );
             });
@@ -185,11 +190,15 @@
 
 
         app.listen( CFG.port );
-        console.log('serving http level1 server from port ' + CFG.port + '...');
+        console.log('serving http level1 server from port ' + CFG.port + ' for db ' + (cfg.dbPath ? cfg.dbPath : 'direct instance') + '...');
+
+
+
+        return db;
     };
 
 
 
     module.exports = level1_http;
-    
+
 })();

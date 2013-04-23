@@ -17,7 +17,7 @@ var level1_core = function(cfg) {
 
 
     // these are kept in closure scope
-  
+
     var db = levelup(cfg.dbPath);
 
 
@@ -174,7 +174,8 @@ var level1_core = function(cfg) {
         values:  values,
         search:  search,
         list:    function(cb) { search(function() {return true;}, cb); },
-        clear:   clear
+        clear:   clear,
+        _db:     db
     };
 };
 

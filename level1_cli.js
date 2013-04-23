@@ -19,8 +19,8 @@ var level1_cli = function(cfg) {
         cfg = {};
     }
 
-    if (!('dbPath' in cfg)) {
-        throw new TypeError('level1.cli() expects the dbPath option to be defined.');
+    if ( !('dbPath' in cfg || 'db' in cfg) ) {
+        throw new TypeError('level1.cli() expects one of: dbPath (string) or db (core instance) to be defined!');
     }
 
     if (!('verbose' in cfg)) {
@@ -29,9 +29,9 @@ var level1_cli = function(cfg) {
 
 
 
-    console.log('LOADING: ' + cfg.dbPath);
+    console.log('cli - using ' + (cfg.dbPath ? cfg.dbPath : 'direct instance') );
 
-    var db = level1_core({dbPath:cfg.dbPath});
+    var db = cfg.db || level1_core({dbPath:cfg.dbPath});
 
 
 
