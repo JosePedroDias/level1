@@ -31,6 +31,6 @@ Use it...
 
     curl http://127.0.0.1:3000/search --data "filter=\"a\" in v"
 
-
+    ** for convenience, the put and search operations support GET and PUT, remaining ones support only GET **
 
 [back to main](https://github.com/JosePedroDias/level1/blob/master/README.md)

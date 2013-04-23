@@ -1,4 +1,4 @@
-var level1 = require('./level1');
+var level1 = require('./level1'); // or 'level1'
 
 var db = level1.core({dbPath:'./log'});
 
