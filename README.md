@@ -7,7 +7,7 @@
 It offers an **abstraction over the leveldb key value store** ([core](https://github.com/JosePedroDias/level1/blob/master/level1_core.md)),
 a **command line interface** ([cli](https://github.com/JosePedroDias/level1/blob/master/level1_cli.md)),
 an **http interface** ([http](https://github.com/JosePedroDias/level1/blob/master/level1_http.md)) and
-an **http client** ([http client](https://github.com/JosePedroDias/level1/blob/master/level1_http_client.js)) for cross-domain usage in web sites.
+an **http client** ([http client](https://github.com/JosePedroDias/level1/blob/master/level1_http_client.js), [example](https://github.com/JosePedroDias/level1/blob/master/level1_http_client_demo.html)) for cross-domain usage in web sites.
 
 
 
