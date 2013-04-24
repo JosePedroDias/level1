@@ -17,15 +17,6 @@
 
 
 
-    var parseIfPossible = function(val) {
-        try {
-            val = JSON.parse(val);
-        } catch (ex) {}
-        return val;
-    };
-
-
-
     var t = function(e, o, keyToSetIfString) {
         if (!e) {
             if (typeof o !== 'object') {
@@ -104,6 +95,9 @@
         var searchHdlr = function(req, res) {
             var fn, fnBody;
             fnBody = req.body.filter || req.query.filter;
+            if (!fnBody) {
+                fnBody = 'return true';
+            }
 
             if (fnBody.indexOf('return') === -1) {
                 fnBody = 'return ' + fnBody;
@@ -124,6 +118,30 @@
         app.get('/search', searchHdlr);
         app.post('/search', searchHdlr);
 
+        app.post('/count', function(req, res) {
+            var fn, fnBody;
+            fnBody = req.body.filter || req.query.filter;
+            if (!fnBody) {
+                fnBody = 'return true';
+            }
+
+            if (fnBody.indexOf('return') === -1) {
+                fnBody = 'return ' + fnBody;
+            }
+
+            if (CFG.verbose) { console.log('.count(' + fnBody + ')'); } 
+
+            try {
+                fn = new Function('v', 'k', fnBody);
+            } catch (err) {
+                return res.send({error: err});
+            }
+
+            db.count(fn, function(err, n) {
+                res.send( t(err, n, 'count') );
+            });
+        });
+
         app.get('/keys', function(req, res) {
             if (CFG.verbose) { console.log('.keys()'); }
 
@@ -138,6 +156,20 @@
             db.values(function(err, values) {
                 res.send( t(err, values) );
             });
+        });
+
+        app.get('/uuids/:n', function(req, res) {
+            var n = req.params.n;
+
+            if (CFG.verbose) { console.log('.n(' + n + ')'); }
+
+            n = parseInt(n, 10);
+
+            if (isNaN(n)) {
+                return res.send({error:'argument must be an integer number'});
+            }
+
+            res.send( db.uuids(n) );
         });
 
 
@@ -156,7 +188,9 @@
 
         var putKeyHdlr = function(req, res) {
             var key = req.params.key;
-            var val = parseIfPossible( req.body.item || req.query.item );
+            var val = req.body.item || req.query.item;
+
+            val = JSON.parse(val);
 
             if (CFG.verbose) { console.log('.put(' + JSON.stringify(val) + ', ' + key + ')'); }
 
@@ -168,7 +202,9 @@
         app.post('/put/:key', putKeyHdlr);
 
         var putHdlr = function(req, res) {
-            var val = parseIfPossible( req.body.item || req.query.item );
+            var val = req.body.item || req.query.item;
+            
+            val = JSON.parse(val);
 
             if (CFG.verbose) { console.log('.put(' + JSON.stringify(val) + ')'); }
 
@@ -187,6 +223,14 @@
             });
         });
 
+
+
+        // TODO expose these optionally
+        /*db.on('ready', function() { console.log('* READY'); });
+        db.on('closed', function() { console.log('* CLOSED'); });
+        db.on('put', function(k, v) { console.log('* PUT: ', k, '->', v); });
+        db.on('del', function(k) { console.log('* DEL: ', k); });*/
+        
 
 
         app.listen( CFG.port );

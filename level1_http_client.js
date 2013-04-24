@@ -78,6 +78,8 @@
         xhr.send(null);
     };
 
+    
+
     var js = function(o) {
         if (typeof o === 'object') {
             return JSON.stringify(o);
@@ -85,7 +87,41 @@
         return o;
     };
 
+
+    var fnr = /function\s*\((.*)\)\s*{(.*)}/g;
+    //console.log( fnr.exec('function (v, k) { return v.age > 1; }') );
+    var parseFn = function(fn) {
+        var m = fnr.exec( fn.toString() );
+        var args = m[1].split(/\s*,\s*/);
+        var body = m[2].trim();
+        fnr.lastIndex = 0;
+        return {args:args, body:body};
+    };
+
+
+
+    var extractAndValidateFilterFn = function(fn) {
+        if (typeof fn === 'string') {
+            return fn;
+        }
+        else if (typeof fn !== 'function') {
+            throw new TypeError('filter function must be a function or its body string!');
+        }
+        var o = parseFn(fn);
+        var a0 = o.args[0];
+        if (a0 && a0 !== 'v') { throw new Error('first argument must be named v!'); }
+        var a1 = o.args[1];
+        if (a1 && a1 !== 'k') { throw new Error('secound argument must be named k!'); }
+        return o.body;
+    };
+    //console.log( parseFn('function (v, k) { return v.age > 1; }') );
+    //console.log( extractAndValidateFilterFn(function (v, k) { return v.age > 1; }) );
+
+
+
     var noop = function() {};
+
+
 
     window.level1 = {
 
@@ -108,6 +144,17 @@
                 values: function(cb) {
                     ajax(
                         [uri, 'values'].join('/'),
+                        cb
+                    );
+                },
+
+                uuids: function(n, cb) {
+                    if (typeof n === 'function') {
+                        cb = n;
+                        n = 1;
+                    }
+                    ajax(
+                        [uri, 'uuids', n].join('/'),
                         cb
                     );
                 },
@@ -152,12 +199,33 @@
                     );
                 },
 
-                search: function(fnBody, cb) {
+                search: function(filterFn, cb) {
+                    if (arguments.length === 1) {
+                        cb = filterFn;
+                        filterFn = 'return true';
+                    }
+                    filterFn = extractAndValidateFilterFn(filterFn);
                     ajax(
                         [uri, 'search'].join('/'),
                         {
                             method: 'POST',
-                            parameters: {filter:fnBody}
+                            parameters: {filter:filterFn}
+                        },
+                        cb
+                    );
+                },
+
+                count: function(filterFn, cb) {
+                    if (arguments.length === 1) {
+                        cb = filterFn;
+                        filterFn = 'return true';
+                    }
+                    filterFn = extractAndValidateFilterFn(filterFn);
+                    ajax(
+                        [uri, 'count'].join('/'),
+                        {
+                            method: 'POST',
+                            parameters: {filter:filterFn}
                         },
                         cb
                     );

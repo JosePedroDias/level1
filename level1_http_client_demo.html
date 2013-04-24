@@ -24,15 +24,19 @@
             // run script...
             var ops = [
                 "l.clear()",
-                "l.put(\"{name:'Anna', age:32}\", 'x', cb)",
-                "l.put(\"{name:'Adam', age:20}\", 'y', cb)",
-                "l.put(\"{name:'Johnny', age:1}\", cb)",
+                "l.put('{\"name\": \"Anna\",   \"age\":32}', 'x', cb)",
+                "l.put('{\"name\": \"Adam\",   \"age\":20}', 'y', cb)",
+                "l.put('{\"name\": \"Johnny\", \"age\":1}', cb)",
                 "l.get('x', cb)",
                 "l.list(cb)",
                 "l.del('y', cb)",
                 "l.keys(cb)",
                 "l.values(cb)",
-                "l.search(\"v.age > 2\", cb)" // TODO NOT WORKING?!
+                "l.search(\"v.age > 2\", cb)",
+                "l.count(\"v.age > 2\", cb)",
+                "l.count(function(v){return v.age > 1;}, cb)",
+                "l.uuids(2, cb)",
+                "l.uuids(cb)"
             ];
 
             var timer = setInterval(
@@ -45,7 +49,7 @@
                     console.warn(op);
                     eval(op);
                 },
-                2000
+                200
             );
         </script>
     </body>

@@ -5,15 +5,6 @@ var level1_core = require('./level1_core'),
 
 
 
-var parseIfPossible = function(val) {
-    try {
-        val = JSON.parse(val);
-    } catch (ex) {}
-    return val;
-};
-
-
-
 var level1_cli = function(cfg) {
     if (!cfg) {
         cfg = {};
@@ -47,14 +38,18 @@ var level1_cli = function(cfg) {
 
         switch (op) {
             case 'add':
-                key = db.put( parseIfPossible( cmd.join(' ') ) );
-                console.log('data added to key ' + key + '\n');
+                key = db.put( JSON.parse( cmd.join(' ') ), function(err) {
+                    if (err) { return console.log(err.message+'\n'); }
+                    console.log('data added to key ' + key + '\n');
+                });
                 break;
 
             case 'put':
                 key = cmd.shift();
-                db.put( parseIfPossible( cmd.join(' ') ) , key);
-                console.log('data set on key ' + key + '\n');
+                db.put( JSON.parse( cmd.join(' ') ), function(err) {
+                    if (err) { return console.log(err.message+'\n'); }
+                    console.log('data set on key ' + key + '\n');
+                });
                 break;
 
             case 'get':
@@ -91,11 +86,33 @@ var level1_cli = function(cfg) {
                     db.search(fn, function(err, res) {
                         if (err) { return console.log(err.message+'\n'); }
                         var r = [];
-                        res.forEach(function(kv) {
-                            r = r.concat('* ', kv.key, ' -> ', JSON.stringify(kv.value, null, '\t'), '\n');
+                        res.forEach(function(v) {
+                            //r = r.concat('* ', kv.key, ' -> ', JSON.stringify(kv.value, null, '\t'), '\n');
+                            r = r.concat(JSON.stringify(v, null, '\t'), '\n');
                         });
                         r = r.concat('TOTAL: ', res.length, '\n');
                         console.log(r.join(''));
+                    });
+                })();
+                break;
+
+            case 'count':
+                (function() {
+                    var fn, fnBody = cmd.length ? cmd.join(' ') : 'return true;';
+
+                    if (fnBody.indexOf('return') === -1) {
+                        fnBody = 'return ' + fnBody;
+                    }
+
+                    try {
+                        fn = new Function('v', 'k', fnBody);
+                    } catch (err) {
+                        return console.log('ERR:' + err);
+                    }
+
+                    db.count(fn, function(err, res) {
+                        if (err) { return console.log(err.message+'\n'); }
+                        console.log(res + '\n');
                     });
                 })();
                 break;
@@ -140,6 +157,7 @@ var level1_cli = function(cfg) {
                     '* del <key>\n',
                     '* list\n',
                     '* search <function body, receiving arguments v, k and returning boolean>\n',
+                    '* count <function body, receiving arguments v, k and returning boolean>\n',
                     '* clear\n',
                     '* keys\n',
                     '* values\n\n'
