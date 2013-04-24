@@ -31,6 +31,10 @@ Use it...
 
     curl http://127.0.0.1:3000/search --data "filter=\"a\" in v"
 
+    curl http://127.0.0.1:3000/count --data "filter=\"a\" in v"
+
+    curl http://127.0.0.1:3000/uuids/2
+
     ** for convenience, the put and search operations support GET and PUT, remaining ones support only GET **
 
 [back to main](https://github.com/JosePedroDias/level1/blob/master/README.md)

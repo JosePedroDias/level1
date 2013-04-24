@@ -21,13 +21,18 @@ db.clear(cb); // clears db
 
 db.list(cb); // returns array of {key:k, value:v}
 
-// you must pass a filter function which receives the arguments: value and key (which you can ignore)
-db.search(function(v) { typeof v === 'object' && 'name' in v && v.name[0].toLowerCase() === 'a' })
-// this example returns values which are objects, have attribute 'name' and whose first character is an a.
+// you must pass a filter function which receives the arguments: v(value) and k(key)
+db.search(function(v) { return 'name' in v && v.name[0].toLowerCase() === 'a'; }, cb);
+// this example returns values which have attribute 'name' and whose first character is an a.
+
+db.count(function(v) { return 'name' in v; }, cb);
+// counts values having 'name' attribute
 
 db.keys(cb); // returns array of keys
 
 db.values(cb); // returns array of values
+
+db.uuids(2, cb); // returns 2 uuids for ad-hoc usage
 
 ```
 

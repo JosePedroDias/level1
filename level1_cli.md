@@ -31,6 +31,8 @@ Use it...
 
     » search "a" in v
 
+    » count "a" in v
+
 
 
 [back to main](https://github.com/JosePedroDias/level1/blob/master/README.md)
