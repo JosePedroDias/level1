@@ -26,12 +26,239 @@ var level1_cli = function(cfg) {
 
 
 
+    var isTrue = function(a) {
+        if (isNaN(a)) {
+            return (a !== 'false' && a !== '' && a !== null && a !== undefined);
+        }
+        return a !== '0';
+    };
+
+
+
+    /*****************
+     * NOW
+     *****************/
+
+    var sec = 1000;
+    var min = sec * 60;
+    var hour = min * 60;
+    var day = hour * 24;
+    var week = day * 7;
+    var year = day * 365.25;
+    var mon = year / 12;
+
+    var times = {
+        s:      sec,
+        sec:    sec,
+        second: sec,
+        m:      min,
+        min:    min,
+        minute: min,
+        h:      hour,
+        hour:   hour,
+        d:      day,
+        day:    day,
+        w:      week,
+        week:   week,
+        y:      year,
+        year:   year,
+        M:      mon,
+        mon:    mon,
+        month:  mon
+    };
+
+    var timeRgx = /([+-])?\s*(\d*\.?\d*)+\s*(\w+)/g;
+
+    var now = function(expr) {
+        /*jshint boss:true */
+        //console.log(expr);
+        var m, ts = new Date().valueOf();
+        var dts = 0;
+        var sign, mult, step;
+        var isDiff = true;
+        while (m = timeRgx.exec(expr) ) {
+            if (m[1] === undefined && dts === 0) { isDiff = false; }
+            //console.log(m[1], m[2], m[3]);
+            sign = (m[1] === '-') ? -1 : 1;
+            mult = (m[2] === undefined || m[2] === '') ? 1 : parseFloat(m[2]);
+            step = times[ m[3] ];
+            dts += mult * mult * step;
+            //console.log(sign, mult, step, dts);
+        }
+        timeRgx.lastIndex = 0;
+        return Math.round( isDiff ? ts + dts : dts );
+    };
+
+    /*****************
+     * REDUCE
+     *****************/
+
+     // ANY AttrS
+
+    var countAttr = function(attrName) {
+        return [
+            function(res, el) {
+                var attrVal = el[attrName];
+                if (attrVal in res) {
+                    ++res[attrVal];
+                }
+                else {
+                    res[attrVal] = 1;
+                }
+                return res;
+            },
+            {}
+        ];
+    };
+
+    var topAttr = function(attrName, bottom, n) {
+        return [
+            function(res, el) {
+                var attrVal = el[attrName];
+                if (attrVal in res) {
+                    ++res[attrVal];
+                }
+                else {
+                    res[attrVal] = 1;
+                }
+                return res;
+            },
+            {},
+            function(res) {
+                var k, res2 = [];
+                for (k in res) {
+                    res2.push( [k, res[k]] );
+                }
+                var getter = function(r) { return r[1]; };
+                var cmp = bottom ?
+                    function(a, b) { return getter(a) - getter(b); } :
+                    function(a, b) { return getter(b) - getter(a); };
+                res2.sort(cmp);
+                if (typeof n === 'number') {
+                    var l = res2.length;
+                    console.log(n, l - n);
+                    res2.splice(n, l - n);
+                }
+                return res2;
+            }
+        ];
+    };
+
+    var uniqueAttr = function(attrName) {
+        return [
+            function(res, el) {
+                var attrVal = el[attrName];
+                if (attrVal in res) {
+                    ++res[attrVal];
+                }
+                else {
+                    res[attrVal] = 1;
+                }
+                return res;
+            },
+            {},
+            function(res) {
+                return Object.keys(res);
+            }
+        ];
+    };
+
+
+
+    // NUMBER AttrS
+
+    var minAttr = function(attrName) {
+        return [
+            function(res, el) {
+                var attrVal = el[attrName];
+                if (typeof attrVal === 'number') {
+                    if (attrVal < res) { res = attrVal; }
+                }
+                return res;
+            },
+            Number.MAX_VALUE
+        ];
+    };
+
+    var maxAttr = function(attrName) {
+        return [
+            function(res, el) {
+                var attrVal = el[attrName];
+                if (typeof attrVal === 'number') {
+                    if (attrVal > res) { res = attrVal; }
+                }
+                return res;
+            },
+            -Number.MAX_VALUE
+        ];
+    };
+
+    var sumAttr = function(attrName) {
+        return [
+            function(res, el) {
+                var attrVal = el[attrName];
+                if (typeof attrVal === 'number') {
+                    res += attrVal;
+                }
+                return res;
+            },
+            0
+        ];
+    };
+
+    var avgAttr = function(attrName) {
+        return [
+            function(res, el) {
+                var attrVal = el[attrName];
+                if (typeof attrVal === 'number') {
+                    res[0] += attrVal;
+                    ++res[1];
+                }
+                return res;
+            },
+            [0, 0],
+            function(res) {
+                if (res[1] === 0) { return 0; }
+                return res[0] / res[1];
+            }
+        ];
+    };
+
+
+
+    // REUSABLE REDUCE
+
+    var reduce = function(arr, algorithm) {
+        var arr2 = arr.reduce(algorithm[0], algorithm[1]);
+        if (algorithm[2]) {
+            arr2 = algorithm[2](arr2);
+        }
+        return arr2;
+    };
+
+
+    /******************
+     * REPL
+     ******************/
+
+    var lastOnes = [];
+    var lastOne;
+    var maxHistory = 5;
+    var storeLastOne = function(res) {
+        lastOne = res;
+        if (lastOnes.length >= maxHistory) { lastOnes.pop(); }
+        lastOnes.unshift(res);
+    };
+
+
     var rl = readline.createInterface({
         input:  process.stdin,
         output: process.stdout
     });
 
     rl.on('line', function(cmd) {
+        /*jshint maxcomplexity: 20 */
+
         cmd = cmd.split(' ');
         var op = cmd.shift();
         var key;
@@ -90,6 +317,7 @@ var level1_cli = function(cfg) {
                             //r = r.concat('* ', kv.key, ' -> ', JSON.stringify(kv.value, null, '\t'), '\n');
                             r = r.concat(JSON.stringify(v, null, '\t'), '\n');
                         });
+                        storeLastOne(res);
                         r = r.concat('TOTAL: ', res.length, '\n');
                         console.log(r.join(''));
                     });
@@ -148,6 +376,52 @@ var level1_cli = function(cfg) {
                 });
                 break;
 
+            case 'now':
+                console.log( now( cmd.join(' ') ) );
+                break;
+
+            case 'reduce':
+                (function() {
+                    if (!lastOne) {
+                        console.log('no prior answer. do a search/list first!');
+                        return;
+                    }
+                    var b, a = lastOne;
+                    var reduceOp = cmd.shift();
+                    var attr     = cmd.shift();
+                    var p1       = cmd.shift();
+                    var p2       = cmd.shift();
+                    switch (reduceOp) {
+                        case 'count':  b = reduce(a,  countAttr(attr)); break;
+                        case 'unique': b = reduce(a, uniqueAttr(attr)); break;
+                        case 'top':
+                            p1 = isTrue(p1);
+                            p2 = (p2 !== undefined) ? parseInt(p2, 10) : undefined;
+                            console.log(p1, p2);
+                            b = reduce(a, topAttr(attr, p1, p2)); break;
+
+                        case 'min': b = reduce(a, minAttr(attr)); break;
+                        case 'max': b = reduce(a, maxAttr(attr)); break;
+                        case 'sum': b = reduce(a, sumAttr(attr)); break;
+                        case 'avg': b = reduce(a, avgAttr(attr)); break;
+                        default:
+                            console.log([
+                                'for any attribute:',
+                                '  count  <attrName>',
+                                '  unique <attrName>',
+                                '  top    <attrName> [<ascending?>] [<n results>]',
+                                'for numeric attributes:',
+                                '  min <attrName>',
+                                '  max <attrName>',
+                                '  sum <attrName>',
+                                '  avg <attrName>'
+                            ].join('\n'));
+                            break;
+                    }
+                    console.log(JSON.stringify(b, null, '\t') + '\n');
+                })();
+                break;
+
             default:
                 console.log([
                     'Supported operations are:\n',
@@ -160,7 +434,10 @@ var level1_cli = function(cfg) {
                     '* count <function body, receiving arguments v, k and returning boolean>\n',
                     '* clear\n',
                     '* keys\n',
-                    '* values\n\n'
+                    '* values\n',
+                    '* now <timeexpr>\n', // TODO NEEDS DOC
+                    '* save <file name>\n', // TODO
+                    '* reduce <op> <attrName> [params]\n\n'
                 ].join(''));
         }
     });
