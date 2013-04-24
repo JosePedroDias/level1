@@ -36,6 +36,10 @@
 
 
 
+    var noop = function() {};
+
+
+
     var level1_http = function(cfg) {
 
         if (!cfg) { cfg = {}; }
@@ -214,6 +218,27 @@
         };
         app.get('/put', putHdlr);
         app.post('/put', putHdlr);
+
+        // removed 'data:image/png;base64,' prefix from 1x1 canvas to base64
+        var imgB64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIW2NkAAIAAAoAAggA9GkAAAAASUVORK5CYII=';
+        var imgBin = new Buffer(imgB64, 'base64');
+        var imgLen = imgBin.length;
+
+        var putImgHdlr = function(req, res) {
+            res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+            res.header('Content-Type', 'image/png');
+            res.header('Content-Length', imgLen);
+
+            var val = req.query;
+
+            if (CFG.verbose) { console.log('.put_img(' + JSON.stringify(val) + ')'); }
+
+            db.put(val, noop);
+
+            res.writeHead(200);
+            res.end(imgBin, 'binary');
+        };
+        app.get('/put_img', putImgHdlr);
 
         app.get('/clear', function(req, res) {
             if (CFG.verbose) { console.log('.clear()'); }

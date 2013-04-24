@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+    <head>
+        <title></title>
+
+        <meta charset="utf-8">
+
+        <script type="text/javascript" src="level1_http_img_client.js"></script>
+    </head>
+
+    <body>
+        <script type="text/javascript">
+            var l = level1.open('http://127.0.0.1:3000');
+
+
+
+            // run script...
+            var ops = [
+                "l.put_img('{\"name\": \"Anna\", \"age\":32}')"
+            ];
+
+            var timer = setInterval(
+                function() {
+                    var op = ops.shift();
+                    if (!op) {
+                        return clearInterval(timer);
+                    }
+                    console.log('');
+                    console.warn(op);
+                    eval(op);
+                },
+                200
+            );
+        </script>
+    </body>
+</html>
