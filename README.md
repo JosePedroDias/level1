@@ -8,10 +8,10 @@ It offers an **tiny abstraction over the leveldb key value store**
 ([docs](https://github.com/JosePedroDias/level1/blob/master/docs/core.md)),
 a **command line interface**
 ([docs](https://github.com/JosePedroDias/level1/blob/master/docs/cli.md),
- [example](https://github.com/JosePedroDias/level1/blob/master/examples/server/cli.md)),
+ [example](https://github.com/JosePedroDias/level1/blob/master/examples/server/cli.js)),
 an **http interface**
 ([docs](https://github.com/JosePedroDias/level1/blob/master/docs/http.md),
- [example](https://github.com/JosePedroDias/level1/blob/master/examples/server/http.md),) and
+ [example](https://github.com/JosePedroDias/level1/blob/master/examples/server/http.js),) and
 an **http client**
 ([example 1](https://github.com/JosePedroDias/level1/blob/master/examples/client/http.html),
  [example 2](https://github.com/JosePedroDias/level1/blob/master/examples/client/img.html)) for cross-domain usage in web sites.
@@ -31,7 +31,7 @@ I haven't tested the project on Windows. It might break due to slash paths, but 
 ## When it is valuable?
 
 * You need KISS persistence for a web experiment
-* You want to 
+* You want to do CRUD of JS objects
 * You want easy KPIs
 
 
@@ -47,11 +47,11 @@ Then the following line should install level1 and its dependencies (leveldown co
 
 ## How to do run the examples
 
-Either clone the repository and run the **run*** samples from there
+Either clone the repository and run the examples from there
 
 or
 
-install via npm and copy the **run*** examples from github, removing the `./` prefix from `require('./level1')`.
+install via npm and copy the examples from github, replacing the level1 require for `require('level1')`.
 
 
 
@@ -60,6 +60,8 @@ install via npm and copy the **run*** examples from github, removing the `./` pr
 * add modify method (or extend search) to allow changing/deleting a subset of the items
 
 * add sort/pagination, caching the overall query result
+
+* support an optional access control function to tweak which http requests are authorized to do which operations
 
 * expose the on events on http via socket.io
 

@@ -1,6 +1,14 @@
 # CHANGELOG
 
-## 0.4 - 2013/04/26
+
+
+## 0.4.1 - 2013/04/26
+
+* refactored the files into directories (was getting too crowded!)
+
+
+
+## 0.4.0 - 2013/04/26
 
 * improved the CLI
     

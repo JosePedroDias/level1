@@ -1,22 +1,27 @@
 {
   "name": "level1",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "author": {
     "name":  "José Pedro Dias",
     "email": "jose.pedro.dias@gmail.com"
   },
   "keywords": [
     "database",
+    "key value store",
     "leveldb",
     "cli",
-    "http"
+    "repl",
+    "http",
+    "http client"
   ],
   "license": "MIT",
   "os": ["linux", "darwin"],
   "description": "level1 is a JavaScript API over leveldb. besides the core abstraction, exposes a command line interface and an HTTP one too.",
   "homepage": "https://github.com/JosePedroDias/level1",
-  "lib":  ".",
-  "main": "./level1.js",
+  "main":    "./lib/index.js",
+  "lib":     "./lib",
+  "doc":     "./docs",
+  "example": "./examples",
   "dependencies": {
     "levelup":   "0.8.x",
     "node-uuid": "1.4.x",
@@ -40,6 +45,6 @@
     "node": ">=0.8"
   },
   "readmeFilename": "README.md",
-  "_id": "level1@0.4.0",
+  "_id": "level1@0.4.1",
   "_from": "level1@"
 }
