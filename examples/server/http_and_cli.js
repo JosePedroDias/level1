@@ -1,4 +1,5 @@
-var level1 = require('./level1'); // or 'level1'
+var level1 = require('../../lib/index'); // github
+//var level1 = require('level1');          // production
 
 var db = level1.core({
 	dbPath:'./log',

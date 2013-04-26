@@ -7,7 +7,7 @@ Use the Command Line Interface to experiment with the API and work fast.
 
 Fire the CLI:
 
-    node run_level1_cli.js mydb
+    node examples/server/cli.js mydb
 
 
 Notes:

@@ -7,7 +7,7 @@ Use the HTTP Interface to interact with the key value store from any location vi
 
 Fire the HTTP Server:
 
-    node run_level1_http.js mydb
+    node examples/server/http.js mydb
 
 
 

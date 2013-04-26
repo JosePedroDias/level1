@@ -4,17 +4,35 @@
 
 ## Summary
 
-It offers an **abstraction over the leveldb key value store** ([core](https://github.com/JosePedroDias/level1/blob/master/level1_core.md)),
-a **command line interface** ([cli](https://github.com/JosePedroDias/level1/blob/master/level1_cli.md)),
-an **http interface** ([http](https://github.com/JosePedroDias/level1/blob/master/level1_http.md)) and
-an **http client** ([http client](https://github.com/JosePedroDias/level1/blob/master/level1_http_client.js), [example](https://github.com/JosePedroDias/level1/blob/master/level1_http_client_demo.html)) for cross-domain usage in web sites.
+It offers an **tiny abstraction over the leveldb key value store**
+([docs](https://github.com/JosePedroDias/level1/blob/master/docs/core.md)),
+a **command line interface**
+([docs](https://github.com/JosePedroDias/level1/blob/master/docs/cli.md),
+ [example](https://github.com/JosePedroDias/level1/blob/master/examples/server/cli.md)),
+an **http interface**
+([docs](https://github.com/JosePedroDias/level1/blob/master/docs/http.md),
+ [example](https://github.com/JosePedroDias/level1/blob/master/examples/server/http.md),) and
+an **http client**
+([example 1](https://github.com/JosePedroDias/level1/blob/master/examples/client/http.html),
+ [example 2](https://github.com/JosePedroDias/level1/blob/master/examples/client/img.html)) for cross-domain usage in web sites.
 
-Level1 code is [MIT licensed](http://www.tldrlegal.com/license/mit-license#).
+This project's code is [MIT licensed](http://www.tldrlegal.com/license/mit-license#).
+
+
+### Disclaimer
 
 This project is a work in development, meaning the API is subject to change (eventually).
 Don't use it in production sites just yet.
 
 I haven't tested the project on Windows. It might break due to slash paths, but I'm not sure. If you do test it there and it works drop me a line.
+
+
+
+## When it is valuable?
+
+* You need KISS persistence for a web experiment
+* You want to 
+* You want easy KPIs
 
 
 
@@ -26,6 +44,7 @@ Then the following line should install level1 and its dependencies (leveldown co
     npm install level1
 
 
+
 ## How to do run the examples
 
 Either clone the repository and run the **run*** samples from there
@@ -33,7 +52,6 @@ Either clone the repository and run the **run*** samples from there
 or
 
 install via npm and copy the **run*** examples from github, removing the `./` prefix from `require('./level1')`.
-
 
 
 
