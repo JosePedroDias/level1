@@ -1,6 +1,6 @@
 {
   "name": "level1",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": {
     "name":  "José Pedro Dias",
     "email": "jose.pedro.dias@gmail.com"
@@ -40,6 +40,6 @@
     "node": ">=0.8"
   },
   "readmeFilename": "README.md",
-  "_id": "level1@0.3.0",
+  "_id": "level1@0.4.0",
   "_from": "level1@"
 }

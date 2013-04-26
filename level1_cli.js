@@ -1,7 +1,8 @@
 'use strict';
 
 var level1_core = require('./level1_core'),
-    readline    = require('readline');
+    readline    = require('readline'),
+    fs          = require('fs');
 
 
 
@@ -158,7 +159,26 @@ var level1_cli = function(cfg) {
             },
             {},
             function(res) {
-                return Object.keys(res);
+                return Object.keys(res).sort();
+            }
+        ];
+    };
+
+
+
+    // AttrS
+    
+    var uniqueAttrs = function() {
+        return [
+            function(res, el) {
+                for (var k in el) {
+                    res[k] = true;
+                }
+                return res;
+            },
+            {},
+            function(res) {
+                return Object.keys(res).sort();
             }
         ];
     };
@@ -241,19 +261,43 @@ var level1_cli = function(cfg) {
      * REPL
      ******************/
 
-    var lastOnes = [];
-    var lastOne;
-    var maxHistory = 5;
-    var storeLastOne = function(res) {
-        lastOne = res;
-        if (lastOnes.length >= maxHistory) { lastOnes.pop(); }
-        lastOnes.unshift(res);
+    //var lastOnes = [];
+    var lastSearch;
+    var lastReduce;
+    //var maxHistory = 5;
+    var storeSearch = function(res) {
+        lastSearch = res;
+        //if (lastOnes.length >= maxHistory) { lastOnes.pop(); }
+        //lastOnes.unshift(res);
     };
 
 
     var rl = readline.createInterface({
         input:  process.stdin,
-        output: process.stdout
+        output: process.stdout,
+        completer: function(line) {
+            var p = line.split(' ');
+            var pl = p.length;
+            var l;
+            var in2nd = false;
+
+            if (p[0] ==='reduce') {
+                in2nd = true;
+                l = 'uniqueAttributes count unique top min max sum avg';
+            }
+            else if (pl === 0 || pl === 1) {
+                l = 'add put get del list search count keys values clear now save reduce';
+            }
+
+            if (l) {
+                l = l.split(' ');
+                l.sort();
+                var arg = p[ in2nd ? 1 : 0 ] || '';
+                var hits = l.filter(function(w) { return w.indexOf(arg) === 0; });
+                return [hits.length ? hits: l, arg];
+            }
+            return [[], ''];
+        }
     });
 
     rl.on('line', function(cmd) {
@@ -317,7 +361,7 @@ var level1_cli = function(cfg) {
                             //r = r.concat('* ', kv.key, ' -> ', JSON.stringify(kv.value, null, '\t'), '\n');
                             r = r.concat(JSON.stringify(v, null, '\t'), '\n');
                         });
-                        storeLastOne(res);
+                        storeSearch(res);
                         r = r.concat('TOTAL: ', res.length, '\n');
                         console.log(r.join(''));
                     });
@@ -380,18 +424,27 @@ var level1_cli = function(cfg) {
                 console.log( now( cmd.join(' ') ) );
                 break;
 
+            case 'save':
+                var name = cmd.shift() + '.json';
+                var fromReduce = cmd.length > 0;
+                fs.writeFileSync( name, JSON.stringify(fromReduce ? lastReduce : lastSearch, null, '\t') );
+                console.log('last ' + (fromReduce?'reduce':'search') + ' saved to ' + name + '\n');
+                break;
+
             case 'reduce':
                 (function() {
-                    if (!lastOne) {
+                    if (!lastSearch) {
                         console.log('no prior answer. do a search/list first!');
                         return;
                     }
-                    var b, a = lastOne;
+                    var b, a = lastSearch;
                     var reduceOp = cmd.shift();
                     var attr     = cmd.shift();
                     var p1       = cmd.shift();
                     var p2       = cmd.shift();
                     switch (reduceOp) {
+                        case 'uniqueAttributes': b = reduce(a, uniqueAttrs()); break;
+
                         case 'count':  b = reduce(a,  countAttr(attr)); break;
                         case 'unique': b = reduce(a, uniqueAttr(attr)); break;
                         case 'top':
@@ -406,6 +459,8 @@ var level1_cli = function(cfg) {
                         case 'avg': b = reduce(a, avgAttr(attr)); break;
                         default:
                             console.log([
+                                'for attributes:',
+                                '  uniqueAttributes',
                                 'for any attribute:',
                                 '  count  <attrName>',
                                 '  unique <attrName>',
@@ -419,6 +474,7 @@ var level1_cli = function(cfg) {
                             break;
                     }
                     console.log(JSON.stringify(b, null, '\t') + '\n');
+                    lastReduce = b;
                 })();
                 break;
 
@@ -435,8 +491,8 @@ var level1_cli = function(cfg) {
                     '* clear\n',
                     '* keys\n',
                     '* values\n',
-                    '* now <timeexpr>\n', // TODO NEEDS DOC
-                    '* save <file name>\n', // TODO
+                    '* now <timeexpr>\n',
+                    '* save <file name> [<fromReduce?>]\n',
                     '* reduce <op> <attrName> [params]\n\n'
                 ].join(''));
         }
