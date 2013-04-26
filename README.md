@@ -9,6 +9,8 @@ a **command line interface** ([cli](https://github.com/JosePedroDias/level1/blob
 an **http interface** ([http](https://github.com/JosePedroDias/level1/blob/master/level1_http.md)) and
 an **http client** ([http client](https://github.com/JosePedroDias/level1/blob/master/level1_http_client.js), [example](https://github.com/JosePedroDias/level1/blob/master/level1_http_client_demo.html)) for cross-domain usage in web sites.
 
+Level1 code is [MIT licensed](http://www.tldrlegal.com/license/mit-license#).
+
 This project is a work in development, meaning the API is subject to change (eventually).
 Don't use it in production sites just yet.
 
