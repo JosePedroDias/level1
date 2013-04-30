@@ -2,6 +2,17 @@
 
 
 
+## 0.4.2 - 2013/04/30
+
+* core:
+    * clear now uses db.batch() internally
+
+* http:
+    * support favicon.ico (not to be spammed to death by browsers)
+    * / route returns basic stats
+
+
+
 ## 0.4.1 - 2013/04/26
 
 * refactored the files into directories (was getting too crowded!)

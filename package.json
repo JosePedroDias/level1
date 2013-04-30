@@ -1,6 +1,6 @@
 {
   "name": "level1",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "author": {
     "name":  "José Pedro Dias",
     "email": "jose.pedro.dias@gmail.com"
@@ -25,7 +25,6 @@
   "dependencies": {
     "levelup":   "0.8.x",
     "node-uuid": "1.4.x",
-    "async":     "0.2.x",
     "express":   "3.2.x"
   },
   "optionalDependencies": {
@@ -45,6 +44,6 @@
     "node": ">=0.8"
   },
   "readmeFilename": "README.md",
-  "_id": "level1@0.4.1",
+  "_id": "level1@0.4.2",
   "_from": "level1@"
 }
